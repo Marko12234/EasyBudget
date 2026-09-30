@@ -1,0 +1,2 @@
+# EasyBudget
+Budget tracking application
