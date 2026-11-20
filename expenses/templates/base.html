@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}EasyBudget{% endblock %}</title>
+</head>
+<body>
+  <nav>
+    <a href="{% url 'home' %}">EasyBudget</a>
+    {% if user.is_authenticated %}
+      <span>Angemeldet als {{ user.username }}</span>
+      <form method="post" action="{% url 'logout' %}" style="display:inline">
+        {% csrf_token %}
+        <button type="submit">Abmelden</button>
+      </form>
+    {% else %}
+      <a href="{% url 'login' %}">Anmelden</a>
+      <a href="{% url 'register' %}">Registrieren</a>
+    {% endif %}
+  </nav>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
