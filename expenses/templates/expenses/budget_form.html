@@ -1,0 +1,12 @@
+<!Doctype html>
+{% extends "base.html" %}
+{% block title %}Budget festlegen{% endblock %}
+{% block content %}
+<h1>Budget für {{ today|date:"F Y" }}</h1>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Speichern</button>
+</form>
+<p><a href="{% url 'home' %}">Zurück</a></p>
+{% endblock %}

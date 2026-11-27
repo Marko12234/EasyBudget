@@ -1,13 +1,27 @@
 <!DOCTYPE html>
 {% extends "base.html" %}
 {% block content %}
-<h1>Willkommen, {{ user.username }}</h1>
-<h2>Deine Kategorien</h2>
-<ul>
-  {% for category in categories %}
-    <li>{{ category.name }}</li>
-  {% empty %}
-    <li>Noch keine Kategorien.</li>
-  {% endfor %}
-</ul>
+<h1>Übersicht {{ today|date:"F Y" }}</h1>
+
+{% if budget %}
+  <p>Ausgegeben: <strong>{{ total }} CHF</strong> von {{ budget.amount }} CHF ({{ percent }} %)</p>
+
+  <div class="progress">
+    <div class="progress-bar {{ status }}" style="width: {{ bar_width }}%"></div>
+  </div>
+
+  {% if status == "danger" %}
+    <p class="hint danger">Budget überschritten um {{ remaining|floatformat:2|cut:"-" }} CHF.</p>
+  {% elif status == "warning" %}
+    <p class="hint warning">Achtung: Du hast über 80 % deines Budgets ausgegeben. Noch {{ remaining }} CHF übrig.</p>
+  {% else %}
+    <p>Noch {{ remaining }} CHF übrig.</p>
+  {% endif %}
+
+  <p><a href="{% url 'budget_edit' %}">Budget ändern</a></p>
+{% else %}
+  <p>Für diesen Monat ist noch kein Budget festgelegt.</p>
+  <p>Bisher ausgegeben: {{ total }} CHF</p>
+  <p><a href="{% url 'budget_edit' %}">Budget festlegen</a></p>
+{% endif %}
 {% endblock %}

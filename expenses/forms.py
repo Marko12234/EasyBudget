@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Expense
+from .models import Budget, Expense
 
 
 class ExpenseForm(forms.ModelForm):
@@ -20,3 +20,9 @@ class ExpenseForm(forms.ModelForm):
     def __init__(self, *args, user, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["category"].queryset = user.categories.all()
+
+class BudgetForm(forms.ModelForm):
+    class Meta:
+        model = Budget
+        fields = ["amount"]
+        labels = {"amount": "Budget (CHF)"}

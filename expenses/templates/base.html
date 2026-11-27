@@ -4,6 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}EasyBudget{% endblock %}</title>
+    <style>
+    .progress { background: #ddd; border-radius: 6px; height: 24px; max-width: 500px; overflow: hidden; }
+    .progress-bar { height: 100%; }
+    .progress-bar.ok { background: #2e9e4f; }
+    .progress-bar.warning { background: #e69500; }
+    .progress-bar.danger { background: #d33; }
+    .hint.warning { color: #b36b00; font-weight: bold; }
+    .hint.danger { color: #d33; font-weight: bold; }
+  </style>
 </head>
 <body>
   <nav>
@@ -11,6 +20,7 @@
     {% if user.is_authenticated %}
       <a href="{% url 'expense_list' %}">Ausgaben</a>
       <a href="{% url 'expense_create' %}">Neue Ausgabe</a>
+      <a href="{% url 'budget_edit' %}">Budget</a>
       <span>Angemeldet als {{ user.username }}</span>
       <form method="post" action="{% url 'logout' %}" style="display:inline">
         {% csrf_token %}
