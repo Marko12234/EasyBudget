@@ -1,8 +1,18 @@
 <!Doctype html>
 {% extends "base.html" %}
-{% block title %}Ausgaben{% endblock %}
+{% block title %}Ausgaben {{ current|date:"F Y" }}{% endblock %}
 {% block content %}
-<h1>Ausgaben {{ today|date:"F Y" }}</h1>
+<h1>Ausgaben {{ current|date:"F Y" }}</h1>
+
+<p>
+  <a href="{% url 'expense_list_month' prev_month.year prev_month.month %}">◀ {{ prev_month|date:"F Y" }}</a>
+  |
+  <a href="{% url 'expense_list_month' next_month.year next_month.month %}">{{ next_month|date:"F Y" }} ▶</a>
+  {% if not is_current_month %}
+    | <a href="{% url 'expense_list' %}">Aktueller Monat</a>
+  {% endif %}
+</p>
+
 <p><a href="{% url 'expense_create' %}">+ Neue Ausgabe</a></p>
 
 <table>
@@ -18,7 +28,7 @@
         <td>{{ expense.amount }} CHF</td>
       </tr>
     {% empty %}
-      <tr><td colspan="4">Diesen Monat noch keine Ausgaben.</td></tr>
+      <tr><td colspan="4">In diesem Monat keine Ausgaben.</td></tr>
     {% endfor %}
   </tbody>
 </table>

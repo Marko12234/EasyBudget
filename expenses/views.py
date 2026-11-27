@@ -1,3 +1,7 @@
+from datetime import date, timedelta
+
+from django.http import Http404
+
 from decimal import Decimal
 
 from django.contrib.auth import login
@@ -93,16 +97,31 @@ def expense_create(request):
 
 
 @login_required
-def expense_list(request):
+def expense_list(request, year=None, month=None):
     today = timezone.localdate()
-    expenses = month_expenses(request.user, today.year, today.month).select_related("category")
-    total = month_total(request.user, today.year, today.month)
+    year = year or today.year
+    month = month or today.month
 
-    return render(
-        request,
-        "expenses/expense_list.html",
-        {"expenses": expenses, "total": total, "today": today},
-    )
+    try:
+        current = date(year, month, 1)
+    except ValueError:
+        raise Http404("Ungültiger Monat")
+
+    prev_month = (current - timedelta(days=1)).replace(day=1)
+    next_month = (current + timedelta(days=32)).replace(day=1)
+
+    expenses = month_expenses(request.user, year, month).select_related("category")
+    total = month_total(request.user, year, month)
+
+    context = {
+        "expenses": expenses,
+        "total": total,
+        "current": current,
+        "prev_month": prev_month,
+        "next_month": next_month,
+        "is_current_month": (year, month) == (today.year, today.month),
+    }
+    return render(request, "expenses/expense_list.html", context)
 
 
 def register(request):
