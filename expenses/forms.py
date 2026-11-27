@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Budget, Expense
+from .models import Budget, Category, Expense
 
 
 class ExpenseForm(forms.ModelForm):
@@ -26,3 +26,19 @@ class BudgetForm(forms.ModelForm):
         model = Budget
         fields = ["amount"]
         labels = {"amount": "Budget (CHF)"}
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ["name"]
+        labels = {"name": "Neue Kategorie"}
+
+    def __init__(self, *args, user, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+
+    def clean_name(self):
+        name = self.cleaned_data["name"].strip()
+        if self.user.categories.filter(name__iexact=name).exists():
+            raise forms.ValidationError("Diese Kategorie existiert bereits.")
+        return name

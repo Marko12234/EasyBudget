@@ -9,4 +9,6 @@ urlpatterns = [
     path("ausgaben/neu/", views.expense_create, name="expense_create"),
     path("ausgaben/<int:year>/<int:month>/", views.expense_list, name="expense_list_month"),
     path("budget/", views.budget_edit, name="budget_edit"),
+    path("kategorien/", views.category_list, name="category_list"),
+    path("kategorien/<int:pk>/loeschen/", views.category_delete, name="category_delete"),
 ]

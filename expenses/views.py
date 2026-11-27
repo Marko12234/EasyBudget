@@ -1,3 +1,8 @@
+from django.contrib import messages
+from django.db.models import ProtectedError
+from django.shortcuts import get_object_or_404
+from django.views.decorators.http import require_POST
+
 from datetime import date, timedelta
 
 from django.http import Http404
@@ -12,7 +17,7 @@ from django.db.models import Sum
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
-from .forms import BudgetForm, ExpenseForm
+from .forms import BudgetForm, CategoryForm, ExpenseForm
 from .models import Category
 
 DEFAULT_CATEGORIES = ["Essen", "Wohnen", "Transport", "Freizeit", "Sonstiges"]
@@ -142,3 +147,38 @@ def register(request):
         form = UserCreationForm()
 
     return render(request, "registration/register.html", {"form": form})
+
+@login_required
+def category_list(request):
+    if request.method == "POST":
+        form = CategoryForm(request.POST, user=request.user)
+        if form.is_valid():
+            category = form.save(commit=False)
+            category.user = request.user
+            category.save()
+            messages.success(request, f'Kategorie "{category.name}" angelegt.')
+            return redirect("category_list")
+    else:
+        form = CategoryForm(user=request.user)
+
+    categories = request.user.categories.all()
+    return render(
+        request,
+        "expenses/category_list.html",
+        {"form": form, "categories": categories},
+    )
+
+
+@login_required
+@require_POST
+def category_delete(request, pk):
+    category = get_object_or_404(Category, pk=pk, user=request.user)
+    try:
+        category.delete()
+        messages.success(request, f'Kategorie "{category.name}" gelöscht.')
+    except ProtectedError:
+        messages.error(
+            request,
+            f'"{category.name}" hat noch Ausgaben und kann nicht gelöscht werden.',
+        )
+    return redirect("category_list")

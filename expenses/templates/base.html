@@ -12,6 +12,8 @@
     .progress-bar.danger { background: #d33; }
     .hint.warning { color: #b36b00; font-weight: bold; }
     .hint.danger { color: #d33; font-weight: bold; }
+    .message.success { color: #2e9e4f; font-weight: bold; }
+    .message.error { color: #d33; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -21,6 +23,7 @@
       <a href="{% url 'expense_list' %}">Ausgaben</a>
       <a href="{% url 'expense_create' %}">Neue Ausgabe</a>
       <a href="{% url 'budget_edit' %}">Budget</a>
+      <a href="{% url 'category_list' %}">Kategorien</a>
       <span>Angemeldet als {{ user.username }}</span>
       <form method="post" action="{% url 'logout' %}" style="display:inline">
         {% csrf_token %}
@@ -32,6 +35,12 @@
     {% endif %}
   </nav>
   <main>
+    {% if messages %}
+      {% for message in messages %}
+        <p class="message {{ message.tags }}">{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+
     {% block content %}{% endblock %}
   </main>
 </body>

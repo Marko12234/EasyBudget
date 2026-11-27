@@ -1,0 +1,26 @@
+<!Doctype html>
+{% extends "base.html" %}
+{% block title %}Kategorien{% endblock %}
+{% block content %}
+<h1>Kategorien</h1>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Hinzufügen</button>
+</form>
+
+<ul>
+  {% for category in categories %}
+    <li>
+      {{ category.name }}
+      <form method="post" action="{% url 'category_delete' category.pk %}" style="display:inline">
+        {% csrf_token %}
+        <button type="submit">Löschen</button>
+      </form>
+    </li>
+  {% empty %}
+    <li>Noch keine Kategorien.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
