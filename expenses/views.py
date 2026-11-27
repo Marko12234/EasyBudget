@@ -1,3 +1,10 @@
+from decimal import Decimal
+
+from django.db.models import Sum
+from django.utils import timezone
+
+from .forms import ExpenseForm
+
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
@@ -33,3 +40,34 @@ def register(request):
         form = UserCreationForm()
 
     return render(request, "registration/register.html", {"form": form})
+
+@login_required
+def expense_create(request):
+    if request.method == "POST":
+        form = ExpenseForm(request.POST, user=request.user)
+        if form.is_valid():
+            expense = form.save(commit=False)
+            expense.user = request.user
+            expense.save()
+            return redirect("expense_list")
+    else:
+        form = ExpenseForm(user=request.user)
+
+    return render(request, "expenses/expense_form.html", {"form": form})
+
+
+@login_required
+def expense_list(request):
+    today = timezone.localdate()
+    expenses = (
+        request.user.expenses
+        .filter(date__year=today.year, date__month=today.month)
+        .select_related("category")
+    )
+    total = expenses.aggregate(total=Sum("amount"))["total"] or Decimal("0")
+
+    return render(
+        request,
+        "expenses/expense_list.html",
+        {"expenses": expenses, "total": total, "today": today},
+    )

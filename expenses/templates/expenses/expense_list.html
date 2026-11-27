@@ -1,0 +1,27 @@
+<!Doctype html>
+{% extends "base.html" %}
+{% block title %}Ausgaben{% endblock %}
+{% block content %}
+<h1>Ausgaben {{ today|date:"F Y" }}</h1>
+<p><a href="{% url 'expense_create' %}">+ Neue Ausgabe</a></p>
+
+<table>
+  <thead>
+    <tr><th>Datum</th><th>Kategorie</th><th>Beschreibung</th><th>Betrag</th></tr>
+  </thead>
+  <tbody>
+    {% for expense in expenses %}
+      <tr>
+        <td>{{ expense.date|date:"d.m.Y" }}</td>
+        <td>{{ expense.category }}</td>
+        <td>{{ expense.description }}</td>
+        <td>{{ expense.amount }} CHF</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="4">Diesen Monat noch keine Ausgaben.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<p><strong>Total: {{ total }} CHF</strong></p>
+{% endblock %}
